@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block head%}
+<h1>Recipe Bank</h1>
+{% endblock %}
+
+{% block body%}
+<div>
+    <h1>Add a recipe</h1>
+    <form method="POST", action="/add">
+        <input name="name" placeholder="Name">
+        <input ingredients="ingredients" placeholder="Ingredients">
+        <input instructions="instructions" placeholder="Instructions">
+        <input time="time" placeholder="Time">
+    
+        <button type="submit">Add recipe</button>
+    </form>
+</div>
+<div class="content">
+    <h1>Your recipes</h1> 
+
+
+    <table border="1">
+        <tr border="1">
+            <th>Recipes</th>
+            <th>Actions</th>
+        </tr>
+
+        <tr>
+            <th>gsfafsddsfaasd</th>
+            <th>adsfhadsjf</th>
+            
+        </tr>
+    </table>
+
+
+</div>
+
+
+{% endblock %}
