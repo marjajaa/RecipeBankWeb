@@ -7,11 +7,11 @@
 {% block body%}
 <div>
     <h1>Add a recipe</h1>
-    <form method="POST", action="/add">
+    <form class="add_form" method="POST" action="/add">
         <input name="name" placeholder="Name">
-        <input ingredients="ingredients" placeholder="Ingredients">
-        <input instructions="instructions" placeholder="Instructions">
-        <input time="time" placeholder="Time">
+        <input name="ingredients" placeholder="Ingredients">
+        <input name="instructions" placeholder="Instructions">
+        <input name="time" placeholder="Time">
     
         <button type="submit">Add recipe</button>
     </form>
@@ -19,22 +19,27 @@
 <div class="content">
     <h1>Your recipes</h1> 
 
+    {% for r in recipes %}
+    <div class="card">
 
-    <table border="1">
-        <tr border="1">
-            <th>Recipes</th>
-            <th>Actions</th>
-        </tr>
+        <p class="date">Created: {{ r.date_created.strftime('%d.%m.%Y') }}</p>
 
-        <tr>
-            <th>gsfafsddsfaasd</th>
-            <th>adsfhadsjf</th>
-            
-        </tr>
-    </table>
+        <h3>{{ r.name }}</h3>
+        <p>Ingredients: {{ r.ingredients }}</p>
+        <p>Instructions: {{ r.instructions }}</p>
+        <p>Time: {{ r.time }}</p>
+        <form class="action" action="/delete/{{ r.id}}" method="POST">
+            <button class="delete">Delete</button>
+        </form>
 
+        <a class="edit_form "href="/edit/{{ r.id }}">
+            <button class="edit">Edit</button>
+        </a>
+        
+    </div>
+    {% endfor %}
 
 </div>
 
-
 {% endblock %}
+

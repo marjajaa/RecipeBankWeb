@@ -1,0 +1,119 @@
+
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.add_form {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    max-width: 500px;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #2d6cdf;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.action {
+    background-color: transparent;
+    width: 100;
+}
+
+.delete {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+
+    width: 70px;
+    padding: 10px;
+
+    background-color: #2d6cdf;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.edit {
+    position: absolute;
+    bottom: 10px;
+    right: 90px;
+
+    width: 70px;
+    padding: 10px;
+
+    background-color: #2d6cdf;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+button:hover {
+    background-color: #1f56c2;
+}
+
+
+.content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+
+.card {
+    position: relative;
+    background: white;
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+
+.card h3 {
+    margin-top: 0;
+}
+
+.card p {
+    margin: 4px 0;
+    color: #555;
+}
+
+.date {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 11px;
+}
