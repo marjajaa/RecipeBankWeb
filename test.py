@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask import session
+
 
 app = Flask(__name__)
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./recipes.db'
 db = SQLAlchemy(app)
 
@@ -16,12 +18,65 @@ class Recipe(db.Model):
     time = db.Column(db.Integer, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
+
     def __repr__(self):
         return f"<Recipe {self.name}>"
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), nullable=False, unique=True)
+    password_hash = db.Column(db.String(256), nullable=False)
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register_user():
+    if request.method == "POST":
+        new_name = request.form["name"]
+        new_password = request.form["password"]
+
+        if len(new_password) < 8:
+            return "Password length has to be at least 8 characters"
+        
+        existing_user = User.query.filter_by(username=new_name).first()
+        if existing_user:
+            return "Username already exists"
+
+        new_user = User(
+            username=new_name,
+            password_hash=generate_password_hash(new_password)
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return redirect("/login")
+
     
+    return render_template("register.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+    
+        user = User.query.filter_by(username=username).first()
+
+        if user and check_password_hash(user.password_hash, password):
+            return redirect(url_for("index", username=user.username))
+        else:
+            return "Invalid username or password"
+
+    return render_template("login.html")
+
+
 @app.route("/delete/<int:id>", methods=["POST"])
 def delete_recipe(id):
     recipe_to_delete = Recipe.query.get(id)
+
+    if recipe_to_delete is None:
+        return "Recipe not found"
 
     try:
         db.session.delete(recipe_to_delete)
@@ -37,7 +92,7 @@ def add_recipe():
         name = request.form["name"],
         ingredients = request.form["ingredients"],
         instructions = request.form["instructions"],
-        time = int(request.form["time"])
+        time = int(request.form["time"]),
         )
         
     db.session.add(recipe)
