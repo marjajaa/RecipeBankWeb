@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block head%}
-<h1>Recipe Bank</h1>
+<h1>{{ user.username }}'s recipes</h1>
 {% endblock %}
 
 {% block body%}
@@ -19,20 +19,20 @@
 <div class="content">
     <h1>Your recipes</h1> 
 
-    {% for r in recipes %}
+    {% for recipe in user.recipes %}
     <div class="card">
 
-        <p class="date">Created: {{ r.date_created.strftime('%d.%m.%Y') }}</p>
+        <p class="date">Created: {{ recipe.date_created.strftime('%d.%m.%Y') }}</p>
 
-        <h3>{{ r.name }}</h3>
-        <p>Ingredients: {{ r.ingredients }}</p>
-        <p>Instructions: {{ r.instructions }}</p>
-        <p>Time: {{ r.time }}</p>
-        <form class="action" action="/delete/{{ r.id}}" method="POST">
+        <h3>{{ recipe.name }}</h3>
+        <p>Ingredients: {{ recipe.ingredients }}</p>
+        <p>Instructions: {{ recipe.instructions }}</p>
+        <p>Time: {{ recipe.time }}</p>
+        <form class="action" action="/delete/{{ recipe.id}}" method="POST">
             <button class="delete">Delete</button>
         </form>
 
-        <a class="edit_form "href="/edit/{{ r.id }}">
+        <a class="edit_form "href="/edit/{{ recipe.id }}">
             <button class="edit">Edit</button>
         </a>
         

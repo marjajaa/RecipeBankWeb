@@ -9,6 +9,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./recipes.db'
 db = SQLAlchemy(app)
 
+app.secret_key = "secretkey"
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -18,6 +19,8 @@ class Recipe(db.Model):
     time = db.Column(db.Integer, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
 
     def __repr__(self):
         return f"<Recipe {self.name}>"
@@ -26,6 +29,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password_hash = db.Column(db.String(256), nullable=False)
+
+    recipes = db.relationship("Recipe", backref="user", lazy=True)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -64,7 +69,8 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user and check_password_hash(user.password_hash, password):
-            return redirect(url_for("index", username=user.username))
+            session["user_id"] = user.id
+            return redirect("/profile")
         else:
             return "Invalid username or password"
 
@@ -73,31 +79,32 @@ def login():
 
 @app.route("/delete/<int:id>", methods=["POST"])
 def delete_recipe(id):
-    recipe_to_delete = Recipe.query.get(id)
+    recipe = Recipe.query.get(id)
 
-    if recipe_to_delete is None:
-        return "Recipe not found"
+    if recipe.user_id != session.get("user_id"):
+        return "Not allowed"
 
-    try:
-        db.session.delete(recipe_to_delete)
-        db.session.commit()
-        return redirect("/")
-    except:
-        return "Error deleting recipe"
+    db.session.delete(recipe)
+    db.session.commit()
+    return redirect("/profile")
 
     
 @app.route("/add", methods=["POST"])
 def add_recipe():
+    if "user_id" not in session:
+        return redirect("/login")
+
     recipe = Recipe(
-        name = request.form["name"],
-        ingredients = request.form["ingredients"],
-        instructions = request.form["instructions"],
-        time = int(request.form["time"]),
-        )
-        
+        name=request.form["name"],
+        ingredients=request.form["ingredients"],
+        instructions=request.form["instructions"],
+        time=int(request.form["time"]),
+        user_id=session["user_id"]
+    )
+
     db.session.add(recipe)
     db.session.commit()
-    return redirect("/")
+    return redirect("/profile")
 
 @app.route("/edit/<int:id>")
 def edit_recipe(id):
@@ -114,12 +121,21 @@ def update_recipe(id):
     recipe.time = int(request.form["time"])
 
     db.session.commit()
-    return redirect("/")
+    return redirect("/profile")
 
-@app.route("/", methods=["GET"])
-def index():
-    recipes = Recipe.query.all()
-    return render_template("index.html", recipes=recipes)
+@app.route("/profile", methods=["GET"])
+def profile():
+    if "user_id" not in session:
+        return redirect("/login")
+    
+    if "user_id" in session:
+        recipes = Recipe.query.filter_by(user_id=session["user_id"]).all()
+
+    else:
+        recipes = []
+
+    user = User.query.get(session["user_id"])
+    return render_template("index.html", user=user, recipes=recipes)
 
 if __name__ == "__main__":
     with app.app_context():
